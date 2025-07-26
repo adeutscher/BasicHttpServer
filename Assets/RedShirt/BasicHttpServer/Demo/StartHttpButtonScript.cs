@@ -1,4 +1,3 @@
-using Plugins.RedShirt.BasicHttpServer;
 using RedShirt.BasicHttpServer.Structures;
 using System.Collections.Generic;
 using System.Net;

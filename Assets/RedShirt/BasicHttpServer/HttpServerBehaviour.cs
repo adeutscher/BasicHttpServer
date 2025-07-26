@@ -1,9 +1,8 @@
-using RedShirt.BasicHttpServer;
 using RedShirt.BasicHttpServer.Structures;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Plugins.RedShirt.BasicHttpServer
+namespace RedShirt.BasicHttpServer
 {
     public class HttpServerBehaviour : MonoBehaviour
     {
