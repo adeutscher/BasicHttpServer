@@ -1,4 +1,3 @@
-using RedShirt.BasicHttpServer.Demo;
 using RedShirt.BasicHttpServer.Responses;
 using RedShirt.BasicHttpServer.Structures;
 using System;
