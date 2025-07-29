@@ -31,6 +31,7 @@ namespace RedShirt.BasicHttpServer.Demo
                 Validators = new List<IHttpValidator>
                 {
                     new BasicHttpAddressValidator("127.0.0.1")
+                    //, new BasicHttpAuthorizationValidator("foo", "bar")
                 }
             });
 
