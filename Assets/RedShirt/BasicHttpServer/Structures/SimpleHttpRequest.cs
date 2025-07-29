@@ -6,6 +6,7 @@ namespace RedShirt.BasicHttpServer.Structures
 {
     public class SimpleHttpRequest
     {
+        public string SourceAddress { get; set; }
         public Guid RequestId { get; set; }
         public string Path { get; set; }
         public HttpMethod Method { get; set; }

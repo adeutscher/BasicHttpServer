@@ -305,6 +305,8 @@ namespace RedShirt.BasicHttpServer
             try
             {
                 var simpleHttpRequest = await GetHttpRequestMessageAsync(client.GetStream());
+                simpleHttpRequest.SourceAddress = IPAddress
+                    .Parse(((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString()).ToString();
                 simpleHttpRequest.RequestId = guid;
 
                 var validatorResponse = ValidatorResponse.Ok;

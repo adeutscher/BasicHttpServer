@@ -45,6 +45,11 @@ namespace RedShirt.BasicHttpServer
                 _server.AddEndpoint(endpoint);
             }
 
+            foreach (var validator in configuration.Validators)
+            {
+                _server.AddValidator(validator);
+            }
+
             if (!_server.Start())
             {
                 Debug.LogError($"Failed to start HTTP server on port {configuration.Port}");
@@ -65,6 +70,7 @@ namespace RedShirt.BasicHttpServer
             public int Port { get; set; }
             public bool DebugErrors { get; set; }
             public List<IHttpEndpoint> Endpoints { get; set; } = new();
+            public List<IHttpValidator> Validators { get; set; } = new();
         }
     }
 }
