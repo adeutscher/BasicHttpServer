@@ -32,33 +32,26 @@ namespace RedShirt.BasicHttpServer.Validators
                 return Task.FromResult(ValidatorResponse.AuthorizationRequired);
             }
 
-            try
+            var parts = GetPasswordParts(topLevelParts[1]);
+            if (parts.Length < 2)
             {
-                var parts = GetPasswordParts(topLevelParts[1]);
-                if (parts.Length < 2)
-                {
-                    return Task.FromResult(ValidatorResponse.BadRequest);
-                }
-
-                var username = parts[0];
-                var password = parts[1];
-                for (var i = 2; i < parts.Length; i++)
-                {
-                    password += ':' + parts[i];
-                }
-
-                if (username == _username && password == _password)
-                {
-                    return Task.FromResult(ValidatorResponse.Ok);
-                }
-
-                return Task.FromResult(ValidatorResponse.AuthorizationRequired);
+                return Task.FromResult(ValidatorResponse.BadRequest);
             }
-            catch (Exception e)
+
+            var username = parts[0];
+            var password = parts[1];
+            for (var i = 2; i < parts.Length; i++)
             {
-                ToastRegionScript.Instance.Add(e.Message);
-                throw;
+                password += ':' + parts[i];
             }
+
+            if (username == _username && password == _password)
+            {
+                return Task.FromResult(ValidatorResponse.Ok);
+            }
+
+            return Task.FromResult(ValidatorResponse.AuthorizationRequired);
+            
         }
 
         internal static string[] GetPasswordParts(string authorizationValue)
