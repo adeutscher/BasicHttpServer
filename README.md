@@ -1,6 +1,6 @@
 # BasicHttpServer
 
-Basic HTTP server for Unity
+Basic HTTP server for Unity. Based on Simple HTTP server by David Jeske ([link](https://www.codeproject.com/Articles/137979/Simple-HTTP-Server-in-C)/[GitHub](https://github.com/jeske/SimpleHttpServer)).
 
 ## Example
 
