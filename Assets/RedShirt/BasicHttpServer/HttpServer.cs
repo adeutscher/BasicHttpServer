@@ -213,16 +213,22 @@ namespace RedShirt.BasicHttpServer
 
             var content = contentLength > 0 ? await DoGetRequestBodyAsync(inputStream, contentLength) : string.Empty;
 
-            var parsedParameters = HttpUtility.ParseQueryString(requestData.Path);
             var parameters = new Dictionary<string, string>();
-            foreach (var key in parsedParameters.AllKeys)
-            {
-                if (string.IsNullOrWhiteSpace(key))
-                {
-                    continue;
-                }
+            var pathParts = requestData.Path.Split('?');
 
-                parameters[key] = parsedParameters.Get(key);
+            if (pathParts.Length >= 2)
+            {
+                var parsedParameters = HttpUtility.ParseQueryString(pathParts[1]);
+
+                foreach (var key in parsedParameters.AllKeys)
+                {
+                    if (string.IsNullOrWhiteSpace(key))
+                    {
+                        continue;
+                    }
+
+                    parameters[key] = parsedParameters.Get(key);
+                }
             }
 
             var request = new SimpleHttpRequest
