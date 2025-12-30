@@ -233,7 +233,7 @@ namespace RedShirt.BasicHttpServer
 
             var request = new SimpleHttpRequest
             {
-                Path = requestData.Path.Split("?")[0],
+                Path = pathParts[0],
                 Method = requestData.Method,
                 Body = content,
                 Parameters = parameters,
