@@ -5,6 +5,7 @@ using RedShirt.BasicHttpServer.Structures;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -93,6 +94,20 @@ namespace RedShirt.BasicHttpServer
                 ? contentLengthParsed
                 : 0;
 
+            /*
+             * Handle chunked transfer encoding
+             * The Transfer-Encoding header can actually accept a list of different encodings.
+             * Only supporting the 'chunked' header for the moment.
+             *
+             * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Transfer-Encoding
+             */
+            headers.TryGetValue("Transfer-Encoding", out var transferEncodingString);
+            if (transferEncodingString == "chunked")
+            {
+                var ms = await DoGetChunkedContentStreamAsync(inputStream);
+                return await new StreamReader(ms).ReadToEndAsync();
+            }
+
             if (contentLength > 0)
             {
                 return await DoGetRequestBodyByContentLengthAsync(inputStream, contentLength);
@@ -100,6 +115,39 @@ namespace RedShirt.BasicHttpServer
 
             // Fallback
             return string.Empty;
+        }
+
+        private static async Task<MemoryStream> DoGetChunkedContentStreamAsync(BufferedStream inputStream)
+        {
+            var ms = new MemoryStream();
+
+            int chunkSize;
+
+            do
+            {
+                if (await StreamReadLineAsync(inputStream) is not { } line)
+                {
+                    throw new IOException("Could not get chunk header line");
+                }
+
+                if (!int.TryParse(line, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out chunkSize))
+                {
+                    throw new IOException($"Could not parse chunk size from value: {line}");
+                }
+
+                var buffer = new byte[chunkSize];
+                var readAsync = await inputStream.ReadAsync(buffer, 0, chunkSize);
+                await ms.WriteAsync(buffer, 0, readAsync);
+
+                // The request message should include one more CRLF before getting to the next header
+                if (!string.IsNullOrWhiteSpace(await StreamReadLineAsync(inputStream)))
+                {
+                    throw new IOException("Read unexpected content");
+                }
+            } while (chunkSize > 0);
+
+            ms.Position = 0; // reset
+            return ms;
         }
 
         public HttpServer(int port, bool debugErrors)
