@@ -45,6 +45,7 @@ namespace RedShirt.BasicHttpServer.Demo
             {
                 _httpServerBehaviour.StartServer(new HttpServerBehaviour.ConfigurationModel
                 {
+                    DebugErrors = false,
                     Port = 8080,
                     Endpoints = new List<IHttpEndpoint>
                     {
@@ -59,7 +60,6 @@ namespace RedShirt.BasicHttpServer.Demo
                 });
                 _httpToggleButton.text = "Turn Off HTTP";
             }
-            
         }
 
         private void ClickTestButton()
@@ -106,11 +106,12 @@ namespace RedShirt.BasicHttpServer.Demo
             }
         }
 
-        private readonly List<Toast> _toasts = new();
         private HttpServerBehaviour _httpServerBehaviour;
 
         private TextElement _httpToggleButton;
         private VisualElement _toastContentElement;
+
+        private readonly List<Toast> _toasts = new();
         private UIDocument _uiDocument;
 
         private class Toast
@@ -118,7 +119,5 @@ namespace RedShirt.BasicHttpServer.Demo
             public TextElement Text { get; set; }
             public DateTime CreatedAt { get; set; }
         }
-    
-    
     }
 }
