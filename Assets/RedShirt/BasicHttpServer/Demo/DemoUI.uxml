@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/RedShirt/BasicHttpServer/Demo/DemoUI.uss?fileID=7433441132597879392&amp;guid=77d66e57408eee42da4f9c8d9b8caee6&amp;type=3#DemoUI"/>
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(174, 63, 63); position: absolute; top: auto; left: auto; right: 0; bottom: 0;">
+        <ui:Button text="Test Toast" name="TestToast"/>
+        <ui:Button text="Toggle HTTP Server" name="ToggleHttp"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="ToastRegion" style="flex-grow: 1; position: absolute; width: 487px; height: 200px; top: 167px; left: 377px; right: 300px; bottom: 148px;"/>
+</ui:UXML>

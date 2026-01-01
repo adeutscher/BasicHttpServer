@@ -6,13 +6,9 @@ namespace RedShirt.BasicHttpServer
 {
     public class HttpServerBehaviour : MonoBehaviour
     {
-        private bool _isStarted;
-
-        private HttpServer _server;
-
         public void FixedUpdate()
         {
-            if (!_isStarted)
+            if (!IsStarted)
             {
                 return;
             }
@@ -20,6 +16,8 @@ namespace RedShirt.BasicHttpServer
             // TODO: Add in some sort of max time processing per update invocation
             _server?.HandleRequests();
         }
+
+        public bool IsStarted { get; private set; }
 
         public void OnDestroy()
         {
@@ -33,7 +31,7 @@ namespace RedShirt.BasicHttpServer
 
         public bool StartServer(ConfigurationModel configuration)
         {
-            if (_isStarted)
+            if (IsStarted)
             {
                 // Already started
                 return false;
@@ -56,14 +54,17 @@ namespace RedShirt.BasicHttpServer
                 return false;
             }
 
-            _isStarted = true;
+            IsStarted = true;
             return true;
         }
 
-        internal void Stop()
+        public void Stop()
         {
             _server?.Stop();
+            IsStarted = false;
         }
+
+        private HttpServer _server;
 
         public class ConfigurationModel
         {

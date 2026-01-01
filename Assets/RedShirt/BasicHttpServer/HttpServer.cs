@@ -84,6 +84,24 @@ namespace RedShirt.BasicHttpServer
             return data;
         }
 
+        private static async Task<string> GetContentAsync(BufferedStream inputStream,
+            Dictionary<string, string> headers)
+        {
+            var contentLength = headers.TryGetValue("Content-Length", out var contentLengthString)
+                                && int.TryParse(contentLengthString, out var contentLengthParsed)
+                                && contentLengthParsed > 0
+                ? contentLengthParsed
+                : 0;
+
+            if (contentLength > 0)
+            {
+                return await DoGetRequestBodyByContentLengthAsync(inputStream, contentLength);
+            }
+
+            // Fallback
+            return string.Empty;
+        }
+
         public HttpServer(int port, bool debugErrors)
         {
             _debugErrors = debugErrors;
@@ -109,7 +127,7 @@ namespace RedShirt.BasicHttpServer
             return this;
         }
 
-        internal static async Task<string> DoGetRequestBodyAsync(Stream inputStream, int contentLength)
+        internal static async Task<string> DoGetRequestBodyByContentLengthAsync(Stream inputStream, int contentLength)
         {
             using var ms = new MemoryStream();
 
@@ -197,21 +215,16 @@ namespace RedShirt.BasicHttpServer
             };
         }
 
-        internal static async Task<SimpleHttpRequest> GetHttpRequestMessageAsync(Stream rawStream)
+        internal static async Task<SimpleHttpRequest> GetHttpRequestMessageAsync(TcpClient client)
         {
             // we can't use a StreamReader for input, because it buffers up extra data on us inside it's
             // "processed" view of the world, and we want the data raw after the headers
-            var inputStream = new BufferedStream(rawStream);
+            var inputStream = new BufferedStream(client.GetStream());
 
             var requestData = await DoParseRequestAsync(inputStream);
             var headerData = await DoParseHeadersAsync(inputStream);
-            var contentLength = headerData.TryGetValue("Content-Length", out var contentLengthString)
-                                && int.TryParse(contentLengthString, out var contentLengthParsed)
-                                && contentLengthParsed > 0
-                ? contentLengthParsed
-                : 0;
 
-            var content = contentLength > 0 ? await DoGetRequestBodyAsync(inputStream, contentLength) : string.Empty;
+            var content = await GetContentAsync(inputStream, headerData);
 
             var parameters = new Dictionary<string, string>();
             var pathParts = requestData.Path.Split('?');
@@ -310,7 +323,7 @@ namespace RedShirt.BasicHttpServer
 
             try
             {
-                var simpleHttpRequest = await GetHttpRequestMessageAsync(client.GetStream());
+                var simpleHttpRequest = await GetHttpRequestMessageAsync(client);
                 simpleHttpRequest.SourceAddress = IPAddress
                     .Parse(((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString()).ToString();
                 simpleHttpRequest.RequestId = guid;
